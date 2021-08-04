@@ -1,3 +1,4 @@
+
 vector<vector<int>> TABLE;
 vector<int> logs;
 
@@ -25,7 +26,7 @@ struct sparse_table {
         for (int i = 1; i < k; i++) {
 
             for (int j = 0; j + (1 << i) - 1 < maxn; j++) {
-                TABLE[j][i] = max(TABLE[j][i-1], TABLE[j + (1 << (i-1))][i-1]);
+                TABLE[j][i] = TABLE[j][i-1] + TABLE[j + (1 << (i-1))][i-1];
             }
 
         }
@@ -44,20 +45,17 @@ struct sparse_table {
 
     int query_sum (int x, int y) {
 
-        int gap = (y - x) + 1;
-        
-        int ans = 0;
+        long long ans = 0;
 
-        int power = 0;
-        while (gap) {
+        int gap = y - x + 1;
 
-            if (gap & 1) {
-                ans += (TABLE[x][power]);
-                x += (1 << power);
+        int log_gap = logs[gap];
+
+        for (int i = log_gap; i >= 0; i--) {
+            if ((1 << i) <= (y - x + 1)) {
+                ans += (long long) TABLE[x][i];
+                x += (1 << i);
             }
-
-            gap = gap/2;
-            power++;
         }
 
         return ans;
